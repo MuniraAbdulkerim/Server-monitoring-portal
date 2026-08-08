@@ -6,6 +6,11 @@ Goal: prove data can be sent in and read back out.
 ## Run it
 
 1. Install Docker Desktop if you don't have it: https://www.docker.com/products/docker-desktop/
+   - **Windows users:** Docker needs WSL2. If Docker Desktop shows "Virtualization support not detected" on first launch, open PowerShell **as Administrator** and run `wsl --install`, then restart your PC. If that fails with "Catastrophic failure," instead run these two commands as admin, restart, then reinstall Docker Desktop:
+     ```
+     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+     ```
 2. From the project root, start Postgres:
    ```
    docker compose up -d
@@ -20,6 +25,33 @@ Goal: prove data can be sent in and read back out.
    npm run dev
    ```
    You should see: `server-monitor backend listening on http://localhost:4000`
+
+### If you get "password authentication failed for user monitor_user"
+
+This almost always means something *else* on your machine is already using port 5432 (commonly a Postgres install from an old project), so your app connects to that instead of our Docker container.
+
+Check for a conflict:
+```
+netstat -ano | findstr :5432
+```
+If you see **two** lines, something else owns that port. Don't uninstall or stop it if you're not sure what it's for — instead, remap our container's port in `docker-compose.yml`:
+```yaml
+    ports:
+      - "5433:5432"
+```
+and update `backend/.env`:
+```
+DB_PORT=5433
+```
+Then `docker compose down && docker compose up -d` and restart the backend.
+
+### If you get "address already in use :::4000" (or :::5432)
+
+An old process is still running in the background. Find and stop it:
+```
+netstat -ano | findstr :4000
+taskkill /PID <the_number_you_see> /F
+```
 
 ## Test it manually (before any collector exists)
 
