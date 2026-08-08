@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { pool } from "./db.js";
 import serversRouter from "./routes/servers.js";
+import { requireAgentToken } from "./middleware/auth.js";
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ app.get("/", (req, res) => {
 
 // This is the endpoint every collector (Windows or Linux) posts to.
 // v0: no auth, no validation yet — we're proving the pipeline works first.
-app.post("/api/v1/health", async (req, res) => {
+app.post("/api/v1/health", requireAgentToken, async (req, res)  => {
   const {
     serverId,
     hostname,
