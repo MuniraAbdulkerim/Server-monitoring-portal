@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { pool } from "./db.js";
+import serversRouter from "./routes/servers.js";
 
 dotenv.config();
 
@@ -78,6 +79,9 @@ app.get("/api/v1/health", async (req, res) => {
     res.status(500).json({ error: "internal server error" });
   }
 });
+
+// Server inventory management (add/edit/remove servers)
+   app.use("/api/v1/servers", serversRouter);
 
 // Returns full history for one server — useful later for graphs
 app.get("/api/v1/health/:serverId", async (req, res) => {
