@@ -3,7 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { pool } from "./db.js";
 import serversRouter from "./routes/servers.js";
+import alertsRouter from "./routes/alerts.js";
 import { requireAgentToken } from "./middleware/auth.js";
+import { checkThresholds } from "./alerts/checkThresholds.js";
 
 dotenv.config();
 
@@ -59,7 +61,9 @@ app.post("/api/v1/health", requireAgentToken, async (req, res)  => {
       ]
     );
 
-    res.status(201).json({ saved: true, id: result.rows[0].id, receivedAt: result.rows[0].received_at });
+   res.status(201).json({ saved: true, id: result.rows[0].id, receivedAt: result.rows[0].received_at });
+
+    checkThresholds(req.body).catch((err) => console.error("Threshold check failed", err));
   } catch (err) {
     console.error("Failed to save health log", err);
     res.status(500).json({ error: "internal server error" });
@@ -83,6 +87,9 @@ app.get("/api/v1/health", async (req, res) => {
 
 // Server inventory management (add/edit/remove servers)
    app.use("/api/v1/servers", serversRouter);
+
+// Alert management
+   app.use("/api/v1/alerts", alertsRouter);
 
 // Returns full history for one server — useful later for graphs
 app.get("/api/v1/health/:serverId", async (req, res) => {

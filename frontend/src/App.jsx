@@ -3,6 +3,7 @@ import Inventory from "./components/Inventory.jsx";
 import "./App.css";
 
 const API_URL = "http://localhost:4000/api/v1/health";
+const ALERTS_URL = "http://localhost:4000/api/v1/alerts";
 const POLL_MS = 10000; // refresh dashboard every 10s (collector sends every 60s)
 
 const THRESHOLDS = {
@@ -104,9 +105,30 @@ function ServerCard({ server }) {
   );
 }
 
+function AlertsBanner({ alerts }) {
+  if (alerts.length === 0) return null;
+
+  return (
+    <section className="alerts-banner">
+      <h2 className="alerts-banner__title">Active Alerts ({alerts.length})</h2>
+      <div className="alerts-list">
+        {alerts.map((alert) => (
+          <div key={alert.id} className={`alert-item alert-item--${alert.severity}`}>
+            <span className={`alert-dot alert-dot--${alert.severity}`} />
+            <span className="alert-server">{alert.server_id}</span>
+            <span className="alert-message">{alert.message}</span>
+            <span className="alert-time">{formatTimeAgo(alert.created_at)}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [view, setView] = useState("dashboard"); // "dashboard" | "inventory"
   const [servers, setServers] = useState([]);
+  const [alerts, setAlerts] = useState([]);
   const [lastSync, setLastSync] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -126,11 +148,25 @@ export default function App() {
     }
   }, []);
 
+  const fetchAlerts = useCallback(async () => {
+    try {
+      const res = await fetch(ALERTS_URL);
+      if (!res.ok) return; // don't break the whole dashboard if this one call fails
+      setAlerts(await res.json());
+    } catch {
+      // silent — alerts are a bonus panel, not critical path
+    }
+  }, []);
+
   useEffect(() => {
     fetchServers();
-    const interval = setInterval(fetchServers, POLL_MS);
+    fetchAlerts();
+    const interval = setInterval(() => {
+      fetchServers();
+      fetchAlerts();
+    }, POLL_MS);
     return () => clearInterval(interval);
-  }, [fetchServers]);
+  }, [fetchServers, fetchAlerts]);
 
   const counts = servers.reduce(
     (acc, s) => {
@@ -172,6 +208,7 @@ export default function App() {
         <Inventory />
       ) : (
         <>
+      <AlertsBanner alerts={alerts} />
       <section className="summary-bar">
         <div className="summary-chip summary-chip--healthy">
           <span className="summary-count">{counts.healthy}</span> Healthy

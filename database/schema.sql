@@ -35,3 +35,18 @@ CREATE TABLE IF NOT EXISTS servers (
 );
 
 CREATE INDEX IF NOT EXISTS idx_servers_server_id ON servers(server_id);
+
+-- Alerts: triggered when a health reading crosses a threshold
+CREATE TABLE IF NOT EXISTS alerts (
+    id SERIAL PRIMARY KEY,
+    server_id TEXT NOT NULL,
+    alert_type TEXT NOT NULL,
+    severity TEXT NOT NULL CHECK (severity IN ('warning', 'critical')),
+    message TEXT NOT NULL,
+    resolved BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    resolved_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_alerts_server_id ON alerts(server_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_resolved ON alerts(resolved);
