@@ -1,0 +1,108 @@
+# =============================================================================
+# render.yaml — Render.com deployment configuration
+# https://render.com/docs/blueprint-spec
+#
+# Architecture on Render:
+#   - ONE web service  (Node.js backend)
+#     · builds the React frontend at deploy time
+#     · serves the compiled SPA from ../frontend/dist in production
+#     · exposes all REST + WebSocket endpoints on the same port
+#   - ONE PostgreSQL database  (Render managed Postgres)
+#
+# To deploy:
+#   1. Push this repo to GitHub / GitLab.
+#   2. In the Render dashboard choose "New Blueprint" and point at the repo.
+#   3. Render reads this file and creates both resources automatically.
+#   4. Set the secret environment variables listed under envVars
+#      (JWT_SECRET, SMTP_* etc.) in the Render dashboard or via the CLI.
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # Web service — Node.js backend (also serves the compiled React SPA)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: server-monitor-portal
+    runtime: node
+    region: oregon            # change to your preferred region
+
+    # Root of the repo (render checks out the whole repo)
+    rootDir: .
+
+    # Build command:
+    #   1. install backend dependencies
+    #   2. install frontend dependencies
+    #   3. compile the React app into frontend/dist
+    buildCommand: |
+      cd backend && npm install --omit=dev
+      cd ../frontend && npm install && npm run build
+
+    # Start the backend — it serves the compiled frontend in production
+    startCommand: cd backend && node src/server.js
+
+    # Render auto-detects the port from the PORT env var (set below)
+    # and routes public traffic to it.
+
+    envVars:
+      # ---- Runtime ----
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 4000             # Render will override this with its own port
+                                # but keeping it explicit is good practice
+
+      # ---- Database (auto-filled from the db resource below) ----
+      - key: DATABASE_URL
+        fromDatabase:
+          name: server-monitor-db
+          property: connectionString
+
+      # Render provides DATABASE_URL as a single URL; parse it in db.js.
+      # If you prefer individual vars, replace the above with:
+      #   DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME
+
+      # ---- JWT ----
+      - key: JWT_SECRET
+        generateValue: true     # Render generates a secure random value once
+                                # and keeps it stable across deploys.
+                                # Override in the dashboard if you need a
+                                # specific value (e.g. to match existing tokens).
+
+      - key: JWT_EXPIRES_IN
+        value: 8h
+
+      # ---- CORS ----
+      # Set this to your actual Render service URL once it is created,
+      # e.g. https://server-monitor-portal.onrender.com
+      # Multiple origins: comma-separated
+      - key: CORS_ORIGIN
+        value: https://server-monitor-portal.onrender.com
+
+      # ---- Server offline detection ----
+      - key: SERVER_OFFLINE_TIMEOUT_SECONDS
+        value: 300
+
+      # ---- SMTP (optional — set in dashboard if you want email alerts) ----
+      # - key: SMTP_HOST
+      #   value: smtp.example.com
+      # - key: SMTP_PORT
+      #   value: 587
+      # - key: SMTP_USER
+      #   sync: false          # mark sync: false to set value only in dashboard
+      # - key: SMTP_PASS
+      #   sync: false
+      # - key: ALERT_EMAIL_FROM
+      #   value: alerts@example.com
+      # - key: ALERT_EMAIL_TO
+      #   value: admin@example.com
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL database
+  # ---------------------------------------------------------------------------
+databases:
+  - name: server-monitor-db
+    databaseName: server_monitor
+    user: monitor_user
+    region: oregon              # must match the web service region
+    plan: free                  # upgrade to starter/standard for production

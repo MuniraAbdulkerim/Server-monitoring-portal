@@ -506,3 +506,347 @@ body {
   font-family: 'IBM Plex Mono', monospace;
   flex-shrink: 0;
 }
+
+/* --- Online/Offline status colours --- */
+:root {
+  --online:  var(--healthy, #22c55e);
+  --offline: #64748b;
+}
+
+.server-card--online   { border-left-color: var(--online); }
+.server-card--offline  { border-left-color: var(--offline); }
+
+.status-dot--online   { background: var(--online); }
+.status-dot--offline  { background: var(--offline); }
+
+.summary-chip--online  .summary-count { color: var(--online); }
+.summary-chip--offline .summary-count { color: var(--offline); }
+
+.status-text { font-family: 'IBM Plex Mono', monospace; text-transform: capitalize; }
+.status-text--online   { color: var(--online); }
+.status-text--offline  { color: var(--offline); }
+.status-text--warning  { color: var(--warning); }
+.status-text--critical { color: var(--critical); }
+
+/* status badge in inventory table */
+.status-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: capitalize;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.status-badge--online   { background: var(--healthy-bg);  color: var(--healthy); }
+.status-badge--offline  { background: rgba(100,116,139,.15); color: var(--offline); }
+.status-badge--warning  { background: var(--warning-bg);  color: var(--warning); }
+.status-badge--critical { background: var(--critical-bg); color: var(--critical); }
+
+/* no-data placeholder inside a server card */
+.server-card__no-data {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 18px 0;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* --- Agent token reveal box --- */
+.token-reveal {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--warning);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.token-reveal__header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.token-reveal__header strong {
+  color: var(--warning);
+  font-size: 0.95rem;
+}
+
+.token-reveal__header span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.token-reveal__value {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  word-break: break-all;
+  color: var(--text-primary);
+  user-select: all;
+}
+
+.token-reveal__instructions {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* resolve button in alerts */
+.alert-item .btn--small {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   LOGIN PAGE
+   ========================================================================== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 36px;
+}
+
+.login-card__header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.login-card__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.login-card__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.login-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.15s;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.login-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-error {
+  background: var(--critical-bg);
+  border: 1px solid var(--critical);
+  color: #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+}
+
+.login-submit {
+  width: 100%;
+  padding: 11px;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.login-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   USER BADGE + ROLE CHIP  (AppLayout header)
+   ========================================================================== */
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.user-badge__name {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.role-chip {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.role-chip--admin  { background: rgba(56,189,248,.15); color: var(--accent); }
+.role-chip--viewer { background: rgba(148,163,184,.1);  color: var(--text-muted); }
+
+/* ==========================================================================
+   PAGE HEADER  (used by AlertsPage, SystemMetricsPage)
+   ========================================================================== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text-primary);
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   SYSTEM METRICS PAGE
+   ========================================================================== */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.metric-card__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 16px;
+}
+
+.metric-detail-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.metric-detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.uptime-display {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 8px 0;
+}
+
+/* System info bar (hostname, OS, uptime strip) */
+.sys-info-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.sys-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 20px;
+  border-right: 1px solid var(--border);
+  flex: 1;
+  min-width: 120px;
+}
+
+.sys-info-item:last-child { border-right: none; }
+
+.sys-info-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.sys-info-value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

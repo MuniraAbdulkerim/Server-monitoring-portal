@@ -6,13 +6,27 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev":   "node --watch src/server.js",
+    "test":  "vitest run --reporter=verbose",
+    "seed":  "node src/scripts/seed.js"
+  },
+  "vitest": {
+    "environment": "node"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "pg": "^8.12.0",
-    "dotenv": "^16.4.5",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "nodemailer": "^9.0.5"
+    "dotenv": "^16.4.5",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^9.0.5",
+    "pg": "^8.12.0",
+    "socket.io": "^4.8.3",
+    "systeminformation": "^5.33.10",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2",
+    "vitest": "^5.0.0"
   }
 }
