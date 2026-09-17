@@ -1,4 +1,4 @@
-# Server Monitoring Portal — Phase 1
+# Server Monitoring Portal 
 
 A self-hosted infrastructure monitoring system. Linux servers run a lightweight
 Python collector that POSTs health metrics to a Node.js/Express backend. A React
