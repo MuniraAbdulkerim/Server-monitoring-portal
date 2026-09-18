@@ -15,6 +15,11 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 const TOKEN_KEY = "smp_jwt";
 const USER_KEY  = "smp_user";
 
+// Resolve once at module load — uses relative path so it works on any host
+// (Render, localhost, custom domain) without hardcoding a URL.
+// Override at build time by setting VITE_API_URL in the environment.
+const BASE_URL = import.meta.env.VITE_API_URL || "/api/v1";
+
 // ---------------------------------------------------------------------------
 // Context
 // ---------------------------------------------------------------------------
@@ -62,8 +67,6 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
-
     fetch(`${BASE_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -97,8 +100,6 @@ export function AuthProvider({ children }) {
    * Throws on failure so the login form can show the error.
    */
   const login = useCallback(async (email, password) => {
-    const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
-
     const res = await fetch(`${BASE_URL}/auth/login`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
@@ -120,7 +121,6 @@ export function AuthProvider({ children }) {
    */
   const logout = useCallback(async () => {
     if (token) {
-      const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
       // Best-effort — don't block UI on network failure
       fetch(`${BASE_URL}/auth/logout`, {
         method:  "POST",

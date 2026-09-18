@@ -19,7 +19,9 @@ import { useAuth } from "../context/AuthContext.jsx";
 import { fetchSystemStatus } from "../services/api.js";
 
 // The socket.io server uses a dedicated path to avoid colliding with Express
-const WS_URL  = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+// Resolve the WebSocket base URL: use env var if set, otherwise fall back to
+// the current page origin so it works on any host without hardcoding.
+const WS_URL  = import.meta.env.VITE_API_BASE_URL || window.location.origin;
 const WS_PATH = "/ws/socket.io";
 
 // ---------------------------------------------------------------------------
