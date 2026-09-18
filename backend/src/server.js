@@ -30,16 +30,10 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow server-to-server (no origin header) or known browser origins
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`));
-      }
-    },
+    origin: true, // reflect the request origin — allows all origins while supporting credentials
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
@@ -52,8 +46,9 @@ const PORT = Number(process.env.PORT) || 4000;
 
 // ---------------------------------------------------------------------------
 // Health check for the API itself (not the monitored servers)
+// Moved to /api/health so GET / is free for the React SPA in production.
 // ---------------------------------------------------------------------------
-app.get("/", (_req, res) => {
+app.get("/api/health", (_req, res) => {
   res.json({ success: true, message: "server-monitor backend running" });
 });
 
